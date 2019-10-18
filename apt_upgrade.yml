@@ -1,0 +1,12 @@
+- hosts: remote
+  remote_user: root
+  tasks:
+    - name: Connection test
+      local_action: shell ssh root@{{ inventory_hostname }} "echo success"
+      register: root_enabled
+    - debug: msg="{{root_enabled.stdout}}"
+    - name: Update and upgrade apt packages
+      become: true
+      apt:
+        upgrade: yes
+        update_cache: yes
