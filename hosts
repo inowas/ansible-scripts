@@ -4,3 +4,6 @@ datadropper.inowas.com
 modflow.inowas.com
 monitoring.inowas.com
 sensors.inowas.com
+
+[api]
+api.dss.inowas.com

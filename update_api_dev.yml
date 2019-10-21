@@ -1,0 +1,47 @@
+---
+- hosts: api
+  remote_user: root
+  tasks:
+    - name: Connection test
+      local_action: shell ssh root@{{ inventory_hostname }} "echo success"
+      register: root_enabled
+    - name: Update and upgrade apt packages
+      apt:
+        upgrade: yes
+        update_cache: yes
+    - name: Stop and shutdown docker-containers for {{ item }}
+      command: docker-compose down
+      args:
+        chdir: /srv/docker/{{item}}
+      with_items:
+        - api-dev
+        - api-dss
+        - api-smart-control
+        - api-training
+    - name: Git pull for {{ item }}
+      command: git pull
+      args:
+        chdir: /srv/docker/{{ item }}
+      with_items:
+        - api-dev
+        - api-dss
+        - api-smart-control
+        - api-training
+    - name: Sync schema for {{ item }}
+      command: ./syncSchema.sh
+      args:
+        chdir: /srv/docker/{{ item }}/api
+      with_items:
+        - api-dev
+        - api-dss
+        - api-smart-control
+        - api-training
+    - name: Start docker-containers for {{ item }}
+      command: docker-compose up -d
+      args:
+        chdir: /srv/docker/{{ item }}
+      with_items:
+        - api-dev
+        - api-dss
+        - api-smart-control
+        - api-training
